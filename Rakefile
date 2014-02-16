@@ -14,7 +14,8 @@ require 'worlddb'
 
 
 BUILD_DIR = "./build"
-DATA_DIR  = "."
+DATA_DIR  = "../world.db"
+
 
 
 WORLD_DB_PATH = "#{BUILD_DIR}/world.db"
@@ -33,7 +34,7 @@ directory BUILD_DIR   # make sure it exists
 
 desc "clean world.db build for release"
 task :build => [:clean,:create,:importworld] do
-  puts "hello from world.db release build script"
+  puts 'Done.'
 end
 
 task :clean do
