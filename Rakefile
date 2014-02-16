@@ -76,7 +76,7 @@ task :book => :env do
 
   require './scripts/book'
 
-  ## build_book()                # multi-page version
+  build_book()                # multi-page version
   ## build_book( inline: true )  # all-in-one-page version a.k.a. inline version
 
   puts 'Done.'
@@ -90,7 +90,7 @@ task :publish => :env do
 
   require './scripts/book'
 
-  ## build_book()                # multi-page version
+  build_book()                # multi-page version
   ## build_book( inline: true )  # all-in-one-page version a.k.a. inline version
 
   puts 'Done.'

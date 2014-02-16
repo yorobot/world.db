@@ -28,13 +28,41 @@ Region    = WorldDb::Model::Region
 City      = WorldDb::Model::City
 
 
+
+######
+# fix/todo: add to textutils
+#  allow passing in of root folder - how? new arg?
+#    or use self.create_with_path or similiar ???
+#  or use PageV2   and alias w/ Page = TextUtils::PageV2  ??
+
+class Page
+  def self.create( name, opts={} )
+    path = "#{PAGES_DIR}/#{name}.md"
+    puts "[book] create page #{name} (#{path})"
+
+    TextUtils::Page.create( path, opts ) do |page|
+      yield( page )
+    end
+  end
+
+  def self.update( name, opts={} )
+    path = "#{PAGES_DIR}/#{name}.md"
+    puts "[book] update page #{name} (#{path})"
+
+    TextUtils::Page.update( path, opts ) do |page|
+      yield( page )
+    end
+  end
+end # class Page
+
+
+
 #####
 # todo/fix: use constant to set  ./_pages   - output (root) folder for generated pages
 # todo/fix: use constant to set layout  e.g. book
 
 
 def build_book( opts={} )
-
 
 ### generate table of contents (toc)
 
@@ -48,59 +76,22 @@ end
 
 
 ### generate pages for countries
-
-# Country.where( "key in ('at','mx','hr', 'de', 'be', 'nl', 'cz')" ).each do |country|
-Country.all.each do |country|
-  puts "build country page #{country.key}..."
-
-  path = country_to_path( country )
-  puts "path=#{path}"
-  Page.create( path, frontmatter: {
-                       layout:  'book',
-                       title:   "#{country.title} (#{country.code})",
-                       permalink: "/#{country.key}.html" })  do |page|
-    file.write render_country( country, opts )
-  end
-end
-
-end # method build_book
-
-
-
-####################################
-# fix:
-#  - use the country order same as in table of contents
-##
-
-def build_book_all_in_one_remove_remove
-
-book_text = <<EOS
----
-layout: book
-title: Contents
-permalink: /book.html
----
-
-EOS
-
-book_text += render_toc( inline: true )
-
-
-### generate pages for countries
 # note: use same order as table of contents
 
 Continent.all.each do |continent|
   continent.countries.order(:title).each do |country|
 
     puts "build country page #{country.key}..."
-    country_text = render_country( country )
-
-    book_text += <<EOS
-
----------------------------------------
-
-EOS
-
-    book_text += country_text
+    path = country_to_path( country )
+    puts "path=#{path}"
+    Page.create( path, frontmatter: {
+                         layout:  'book',
+                         title:   "#{country.title} (#{country.code})",
+                         permalink: "/#{country.key}.html" })  do |page|
+      file.write render_country( country, opts )
+    end
   end
 end
+
+end # method build_book
+
