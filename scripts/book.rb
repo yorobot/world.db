@@ -70,7 +70,7 @@ Page.create( 'index', frontmatter: {
                         layout: 'book',
                         title: 'Contents',
                         permalink: '/index.html' }) do |page|
-  file.write render_toc( opts )
+  page.write render_toc( opts )
 end
 
 
@@ -88,7 +88,7 @@ Continent.all.each do |continent|
                          layout:  'book',
                          title:   "#{country.title} (#{country.code})",
                          permalink: "/#{country.key}.html" })  do |page|
-      file.write render_country( country, opts )
+      page.write render_country( country, opts )
     end
   end
 end
