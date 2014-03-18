@@ -32,7 +32,7 @@ task :default => :build
 directory BUILD_DIR   # make sure it exists
 
 
-desc "clean world.db build for release"
+desc "clean world.db build from folder '#{DATA_DIR}'"
 task :build => [:clean,:create,:importworld] do
   puts 'Done.'
 end
@@ -51,11 +51,13 @@ end
 
 desc "create world.db schema"
 task :create => :env do
-  LogDb.create
+  LogDb.create    #  logs table
+  ConfDb.create   #  props table
+  TagDb.create    #  taggings, tags tables
   WorldDb.create
 end
 
-desc "import world.db seeds from folder '#{DATA_DIR}'"
+
 task :importworld => :env do
   WorldDb.read_setup( 'setups/all', DATA_DIR )
 end
@@ -64,10 +66,11 @@ task :deleteworld => :env do
   WorldDb.delete!
 end
 
-desc 'update world.db'
+desc "update world.db from folder '#{DATA_DIR}'"
 task :update => [:deleteworld, :importworld] do
   puts 'Done.'
 end
+
 
 
 desc 'build book (draft version) - The Free World Fact Book - from world.db'
@@ -103,11 +106,13 @@ task :about => :env do
   puts ''
   puts 'gem versions'
   puts '============'
+  puts "props     #{ConfUtils::VERSION}     (#{ConfUtils.root})"
+  puts "logutils  #{LogKernel::VERSION}     (#{LogKernel.root})"
   puts "textutils #{TextUtils::VERSION}     (#{TextUtils.root})"
+  puts "tagutils  #{TagUtils::VERSION}     (#{TagUtils.root})"
   puts "worlddb   #{WorldDb::VERSION}     (#{WorldDb.root})"
 
   ## todo - add LogUtils  LogDb ??  - check for .root too
-  ## todo - add ConfigUtils ConfUtils ConfDb ??
 end
 
 
