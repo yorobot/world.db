@@ -30,30 +30,66 @@ City      = WorldDb::Model::City
 
 
 ######
-# fix/todo: add to textutils
-#  allow passing in of root folder - how? new arg?
-#    or use self.create_with_path or similiar ???
-#  or use PageV2   and alias w/ Page = TextUtils::PageV2  ??
+# fix/todo: add to textutils or hybook ?? for reuse
 
-class Page
-  def self.create( name, opts={} )
-    path = "#{PAGES_DIR}/#{name}.md"
-    puts "[book] create page #{name} (#{path})"
 
-    TextUtils::Page.create( path, opts ) do |page|
-      yield( page )
+class JekyllBuilder
+
+  def initialize( pages_dir, opts={} )
+    @pages_dir = pages_dir
+
+    @inline    = opts[:inline ] == true ? true : false
+
+    ### @layout    = opts[:layout] || 'book'
+
+    ## if @inline create all-in-one book(.html) page
+    if @inline
+      path = "#{@pages_dir}/book.md"      
+      puts "[book] create all-in-one book page (#{path})"
+
+      ## add frontmatter
+
+      ## todo: get title from opts!!!
+
+      page_opts = { frontmatter: {
+                       layout: 'book',
+                       title: 'Book Title Here',
+                       permalink: '/book.html' } }
+
+      TextUtils::Page.create( path, page_opts ) do |page|
+        ## do nothing for now
+      end
     end
   end
 
-  def self.update( name, opts={} )
-    path = "#{PAGES_DIR}/#{name}.md"
-    puts "[book] update page #{name} (#{path})"
 
-    TextUtils::Page.update( path, opts ) do |page|
-      yield( page )
+  def page( name, frontmatter={} )
+
+    if @inline
+      path = "#{@pages_dir}/book.md"
+      puts "[book] update all-in-one book page -- #{name} (#{path})"
+
+      ## note: ignore title and permalink (frontmatter opts for now; not needed for all-in-one)
+      TextUtils::Page.update( path ) do |page|
+        yield( page )
+      end
+    else
+      path = "#{@pages_dir}/#{name}.md"
+      puts "[book] create page #{name} (#{path})"
+
+      page_opts = { frontmatter: {
+                       layout: 'book' } }
+      ## merge all frontmatter opts for now into frontmatter
+      #  e.g. expects title and permalink for now
+      page_opts[ :frontmatter] = page_opts[ :frontmatter ].merge( frontmatter )
+
+      TextUtils::Page.create( path, page_opts ) do |page|
+        yield( page )
+      end
     end
   end
-end # class Page
+
+end  # class JekyllBuilder
 
 
 
@@ -66,13 +102,12 @@ def build_book( opts={} )
 
 ### generate table of contents (toc)
 
-Page.create( 'index', frontmatter: {
-                        layout: 'book',
-                        title: 'Contents',
-                        permalink: '/index.html' }) do |page|
-  page.write render_toc( opts )
-end
+  b = JekyllBuilder.new( PAGES_DIR, opts )
 
+  b.page('index',  title:     'Contents',
+                   permalink: '/index.html' ) do |page|
+      page.write render_toc( opts )
+  end
 
 
 ### generate pages for countries
@@ -84,10 +119,9 @@ Continent.all.each do |continent|
     puts "build country page #{country.key}..."
     path = country_to_path( country )
     puts "path=#{path}"
-    Page.create( path, frontmatter: {
-                         layout:  'book',
-                         title:   "#{country.name} (#{country.code})",
-                         permalink: "/#{country.key}.html" })  do |page|
+    
+    b.page( path,  title:    "#{country.name} (#{country.code})",
+                   permalink: "/#{country.key}.html" ) do |page|
       page.write render_country( country, opts )
     end
   end
