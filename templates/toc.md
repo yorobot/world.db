@@ -16,11 +16,11 @@
 {% Continent.all.each do |continent| %}
 
 
-#### {{ continent.title }}
-{: #{{ urlify( continent.title ) }} }
+#### {{ continent.name }}
+{: #{{ urlify( continent.name ) }} }
 
   {{ columns_begin( columns: 2 ) }}
-  {{ render_toc_countries( continent.countries.order(:title), opts ) }}
+  {{ render_toc_countries( continent.countries.order(:name), opts ) }}
   {{ columns_end() }}
 
 {% end %}<!-- each continent -->

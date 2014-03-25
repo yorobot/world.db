@@ -2,8 +2,8 @@
 
 #### todo: urlify - move to misc helpers!!
 
-def urlify( title )
-  title.downcase.gsub( ' ', '-' ).gsub( /[^a-z\-]/, '' )
+def urlify( name )
+  name.downcase.gsub( ' ', '-' ).gsub( /[^a-z\-]/, '' )
 end
 
 

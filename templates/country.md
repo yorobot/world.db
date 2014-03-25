@@ -1,4 +1,4 @@
-## {{ country.title }}   ++
+## {{ country.name }}   ++
    ({{ country.code }})  ++
    -                     ++
    {{ country.regions.count }} Regions, ++
@@ -25,7 +25,7 @@
   .. <!-- list regions w/ breweries -->
 {% country.regions.each do |region| %}
 
-### {{ region.title_w_synonyms }}  ++
+### {{ region.all_names }}  ++
     _({{ region.cities.count }})_{:.count}
 {: #{{ country.key }}-{{ region.key }} }
 
@@ -34,7 +34,7 @@
  {{ cities_navbar_for_region( region ) }}
 
  {{ columns_begin( columns: 2 ) }}
- {{ render_cities( region.cities.order(:title) ) }}
+ {{ render_cities( region.cities.order(:name) ) }}
  {{ columns_end() }}
 
 {% end %} <!-- each region -->

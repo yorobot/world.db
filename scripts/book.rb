@@ -79,14 +79,14 @@ end
 # note: use same order as table of contents
 
 Continent.all.each do |continent|
-  continent.countries.order(:title).each do |country|
+  continent.countries.order(:name).each do |country|
 
     puts "build country page #{country.key}..."
     path = country_to_path( country )
     puts "path=#{path}"
     Page.create( path, frontmatter: {
                          layout:  'book',
-                         title:   "#{country.title} (#{country.code})",
+                         title:   "#{country.name} (#{country.code})",
                          permalink: "/#{country.key}.html" })  do |page|
       page.write render_country( country, opts )
     end
