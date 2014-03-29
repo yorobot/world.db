@@ -1,7 +1,5 @@
 ..
 ..
-
-{{ city.name }}  ++
+{{ city.all_names }}  ++
 {{ city_pop( city ) }} ++
-{: .city #{{city.key}} } ++
-<br>
+ •

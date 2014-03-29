@@ -25,16 +25,10 @@
   .. <!-- list regions w/ breweries -->
 {% country.regions.each do |region| %}
 
-### {{ region.all_names }}  ++
-    _({{ region.cities.count }})_{:.count}
+### _({{region.key}})_{:.key} {{ region.all_names }}  ++
+    _({{ region.cities.count }})_{:.count}    {{ region.area }} km2  {{ region.pop }} pop
 {: #{{ country.key }}-{{ region.key }} }
 
- .. <!-- add intra-page cities for regions links here -->
- <!-- change to navbar_cities_for_region( region ) ??? -->
- {{ cities_navbar_for_region( region ) }}
-
- {{ columns_begin( columns: 2 ) }}
  {{ render_cities( region.cities.order(:name) ) }}
- {{ columns_end() }}
 
 {% end %} <!-- each region -->
