@@ -33,25 +33,31 @@ City      = WorldDb::Model::City
 
 class JekyllBuilder
 
-  def initialize( pages_dir, opts={} )
-    @pages_dir = pages_dir
+  def inline?()   @inline;    end
+  def title()     @title;     end
+  def layout()    @layout;    end
+  def pages_dir() @pages_dir; end
 
-    @inline    = opts[:inline ] == true ? true : false
 
-    ### @layout    = opts[:layout] || 'book'
+  def initialize( user_pages_dir, opts={} )
+    @pages_dir = user_pages_dir   # add user_ to avoid conflict w/ attrib
+
+    @inline    = opts[:inline ] == true ? true : false   # all-in-one page version or multi-page?
+
+    @title     = opts[:title]  || 'Book Title Here'
+    @layout    = opts[:layout] || 'book'
+
 
     ## if @inline create all-in-one book(.html) page
-    if @inline
-      path = "#{@pages_dir}/book.md"      
+    if inline?
+      path = "#{pages_dir}/book.md"      
       puts "[book] create all-in-one book page (#{path})"
 
       ## add frontmatter
 
-      ## todo: get title from opts!!!
-
       page_opts = { frontmatter: {
-                       layout: 'book',
-                       title: 'Book Title Here',
+                       layout: layout,
+                       title:  title,
                        permalink: '/book.html' } }
 
       TextUtils::Page.create( path, page_opts ) do |page|
@@ -61,25 +67,31 @@ class JekyllBuilder
   end
 
 
-  def page( name, frontmatter={} )
 
-    if @inline
-      path = "#{@pages_dir}/book.md"
+  def page( name, opts={} )
+
+    # add fallbacks/defaults
+    opts[:title] ||= 'Page Title Here'
+    opts[:id]    ||= TextUtils.slugify( @title )   ## add page/section counter to generated fallback id/anchor
+
+    if inline?
+      path = "#{pages_dir}/book.md"
       puts "[book] update all-in-one book page -- #{name} (#{path})"
 
-      ## note: ignore title and permalink (frontmatter opts for now; not needed for all-in-one)
-      TextUtils::Page.update( path ) do |page|
+      page_opts = {}.merge( opts )  ## for now pass along all opts; no built-in/auto-added opts -- in the future add page/section counter or similar, for example?
+      TextUtils::Page.update( path, page_opts ) do |page|
         yield( page )
       end
     else
-      path = "#{@pages_dir}/#{name}.md"
+      path = "#{pages_dir}/#{name}.md"
       puts "[book] create page #{name} (#{path})"
 
       page_opts = { frontmatter: {
-                       layout: 'book' } }
-      ## merge all frontmatter opts for now into frontmatter
-      #  e.g. expects title and permalink for now
-      page_opts[ :frontmatter] = page_opts[ :frontmatter ].merge( frontmatter )
+                       layout:    layout,                 # e.g. 'book'
+                       title:     opts[:title],            # e.g. 'The Free Beer Book'
+                       permalink: "/#{opts[:id]}.html"      # e.g. '/index.html'
+                  }}
+      page_opts = page_opts.merge( opts )   ## pass along all opts
 
       TextUtils::Page.create( path, page_opts ) do |page|
         yield( page )
@@ -103,7 +115,7 @@ def build_book( opts={} )
   b = JekyllBuilder.new( PAGES_DIR, opts )
 
   b.page('index',  title:     'Contents',
-                   permalink: '/index.html' ) do |page|
+                   id:        'index' ) do |page|
       page.write render_toc( opts )
   end
 
@@ -119,7 +131,7 @@ Continent.all.each do |continent|
     puts "path=#{path}"
     
     b.page( path,  title:    "#{country.name} (#{country.code})",
-                   permalink: "/#{country.key}.html" ) do |page|
+                   id:       country.key ) do |page|
       page.write render_country( country, opts )
     end
   end
