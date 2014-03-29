@@ -38,11 +38,11 @@ end
 
 def render_city( city, opts={} )
   tmpl       = File.read_utf8( 'templates/shared/_city.md' )
-  render_erb_template( tmpl, binding )
+  TextUtils::PageTemplate.new( tmpl ).render( binding )
 end
 
 def render_city_idx( city, opts={} )
   tmpl       = File.read_utf8( 'templates/shared/_city-idx.md' )
-  render_erb_template( tmpl, binding )
+  TextUtils::PageTemplate.new( tmpl ).render( binding )
 end
 

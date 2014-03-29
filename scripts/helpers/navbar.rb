@@ -8,7 +8,7 @@ def continents_navbar    # use render? or just call method/helper continent_navb
   buf = ''
   Continent.all.each_with_index do |continent,i|
     buf << ' • ' if i > 0
-    buf << link_to( continent.name, "##{urlify(continent.name)}" )
+    buf << link_to( continent.name, "##{continent.slug}" )
   end
   buf
 end

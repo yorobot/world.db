@@ -11,8 +11,6 @@ require_relative 'helpers/misc'
 require_relative 'helpers/city'
 require_relative 'helpers/page'
 
-require_relative 'utils'
-
 
 
 puts '[book]  Welcome'
@@ -117,7 +115,7 @@ Continent.all.each do |continent|
   continent.countries.order(:name).each do |country|
 
     puts "build country page #{country.key}..."
-    path = country_to_path( country )
+    path = country.to_path
     puts "path=#{path}"
     
     b.page( path,  title:    "#{country.name} (#{country.code})",

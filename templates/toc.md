@@ -17,7 +17,7 @@
 
 
 #### {{ continent.name }}
-{: #{{ urlify( continent.name ) }} }
+{: #{{ continent.slug }} }
 
   {{ columns_begin( columns: 2 ) }}
   {{ render_toc_countries( continent.countries.order(:name), opts ) }}
