@@ -27,82 +27,6 @@ City      = WorldDb::Model::City
 
 
 
-######
-# fix/todo: add to textutils or hybook ?? for reuse
-
-
-class JekyllBuilder
-
-  def inline?()   @inline;    end
-  def title()     @title;     end
-  def layout()    @layout;    end
-  def pages_dir() @pages_dir; end
-
-
-  def initialize( user_pages_dir, opts={} )
-    @pages_dir = user_pages_dir   # add user_ to avoid conflict w/ attrib
-
-    @inline    = opts[:inline ] == true ? true : false   # all-in-one page version or multi-page?
-
-    @title     = opts[:title]  || 'Book Title Here'
-    @layout    = opts[:layout] || 'book'
-
-
-    ## if @inline create all-in-one book(.html) page
-    if inline?
-      path = "#{pages_dir}/book.md"      
-      puts "[book] create all-in-one book page (#{path})"
-
-      ## add frontmatter
-
-      page_opts = { frontmatter: {
-                       layout: layout,
-                       title:  title,
-                       permalink: '/book.html' } }
-
-      TextUtils::Page.create( path, page_opts ) do |page|
-        ## do nothing for now
-      end
-    end
-  end
-
-
-
-  def page( name, opts={} )
-
-    # add fallbacks/defaults
-    opts[:title] ||= 'Page Title Here'
-    opts[:id]    ||= TextUtils.slugify( @title )   ## add page/section counter to generated fallback id/anchor
-
-    if inline?
-      path = "#{pages_dir}/book.md"
-      puts "[book] update all-in-one book page -- #{name} (#{path})"
-
-      page_opts = {}.merge( opts )  ## for now pass along all opts; no built-in/auto-added opts -- in the future add page/section counter or similar, for example?
-      TextUtils::Page.update( path, page_opts ) do |page|
-        yield( page )
-      end
-    else
-      path = "#{pages_dir}/#{name}.md"
-      puts "[book] create page #{name} (#{path})"
-
-      page_opts = { frontmatter: {
-                       layout:    layout,                 # e.g. 'book'
-                       title:     opts[:title],            # e.g. 'The Free Beer Book'
-                       permalink: "/#{opts[:id]}.html"      # e.g. '/index.html'
-                  }}
-      page_opts = page_opts.merge( opts )   ## pass along all opts
-
-      TextUtils::Page.create( path, page_opts ) do |page|
-        yield( page )
-      end
-    end
-  end
-
-end  # class JekyllBuilder
-
-
-
 #####
 # todo/fix: use constant to set  ./_pages   - output (root) folder for generated pages
 # todo/fix: use constant to set layout  e.g. book
@@ -112,7 +36,7 @@ def build_book( opts={} )
 
 ### generate table of contents (toc)
 
-  b = JekyllBuilder.new( PAGES_DIR, opts )
+  b = BookBuilder.new( PAGES_DIR, opts )
 
   b.page('index',  title:     'Contents',
                    id:        'index' ) do |page|

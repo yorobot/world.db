@@ -12,10 +12,18 @@ require 'logutils'
 require 'logutils/db'
 require 'worlddb'
 
+require 'hybook'   # book builder n helpers
+
+
+# our own code
+
+require './settings'
+
+##
+# output settings
+
 
 BUILD_DIR = "./build"
-DATA_DIR  = "../world.db"
-
 
 
 WORLD_DB_PATH = "#{BUILD_DIR}/world.db"
@@ -111,6 +119,9 @@ task :about => :env do
   puts "textutils #{TextUtils::VERSION}     (#{TextUtils.root})"
   puts "tagutils  #{TagUtils::VERSION}     (#{TagUtils.root})"
   puts "worlddb   #{WorldDb::VERSION}     (#{WorldDb.root})"
+
+  puts "hybook   #{Hybook::VERSION}     (#{Hybook.root})"  
+  ## puts "markdownb   #{WorldDb::VERSION}     (#{WorldDb.root})"  -- fix: use Markdown gem too
 
   ## todo - add LogUtils  LogDb ??  - check for .root too
 end

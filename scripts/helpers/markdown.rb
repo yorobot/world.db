@@ -2,6 +2,12 @@
 # markdown helpers
 
 
+###
+#  fix: move to Markdown gem
+#   add to new module
+#  MarkdownHelper or Markdown::Helper ???
+
+
 def link_to( title, link )
   "[#{title}](#{link})"
 end
