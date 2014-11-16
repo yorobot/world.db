@@ -5,6 +5,8 @@
 
 require 'pp'
 
+### use $DEBUG_RUBYLIBS = true
+$DEBUG = true
 
 # 3rd party libs/gems
 
@@ -67,7 +69,8 @@ end
 
 
 task :importworld => :env do
-  WorldDb.read_setup( 'setups/all', DATA_DIR )
+  WorldDb.read_setup( 'setups/test', DATA_DIR )
+  ## WorldDb.read_setup( 'setups/all', DATA_DIR )
 end
 
 task :deleteworld => :env do
