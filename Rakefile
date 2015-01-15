@@ -5,13 +5,14 @@
 
 require 'pp'
 
-### use $DEBUG_RUBYLIBS = true
-$DEBUG = true
+## $DEBUG = true
+$RUBYLIBS_DEBUG = true
+
 
 # 3rd party libs/gems
 
 require 'logutils'
-require 'logutils/db'
+require 'logutils/activerecord'
 require 'worlddb'
 
 require 'hybook'   # book builder n helpers
