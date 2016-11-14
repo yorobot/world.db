@@ -6,23 +6,23 @@ $RUBYLIBS_DEBUG = true
 
 # 3rd party libs/gems
 
-require 'worlddb'   ##   todo: just use worlddb/models - why, why not???
+require 'worlddb/models'
 require 'logutils/activerecord'   ## add db logging
 
 # our own code
 
-require './settings'     ## e.g. pulls in DATA_DIR (e.g. ../world.db)
+require './settings'     ## e.g. pulls in WORLD_DIR (e.g. ../world.db)
 
 
 ##
 # output settings
 
 BUILD_DIR     = "./build"
-WORLD_DB_PATH = "#{BUILD_DIR}/world.db"
+DB_PATH = "#{BUILD_DIR}/world.db"
 
 DB_CONFIG = {
   adapter:  'sqlite3',
-  database:  WORLD_DB_PATH
+  database:  DB_PATH
 }
 
 
@@ -32,13 +32,10 @@ directory BUILD_DIR   # make sure it exists
 
 
 
-desc "clean world.db build from folder '#{DATA_DIR}'"
-task :build => [:clean,:create,:importworld] do
-  puts 'Done.'
-end
 
+desc "clean world.db build e.g. '#{DB_PATH}'"
 task :clean do
-  rm WORLD_DB_PATH if File.exists?( WORLD_DB_PATH )
+  rm DB_PATH if File.exists?( DB_PATH )
 end
 
 task :env => BUILD_DIR do
@@ -61,19 +58,27 @@ task :create => :env do
   WorldDb.create_all
 end
 
+task :deleteworld => :env do
+  WorldDb.delete!
+end
+
+
 
 SETUP = ENV['SETUP'] || ENV['DATA'] || 'countries'
 puts "  using SETUP >#{SETUP}<"
 
 task :importworld => :env do
-  WorldDb.read_setup( "setups/#{SETUP}", DATA_DIR )
+  WorldDb.read_setup( "setups/#{SETUP}", WORLD_DIR )
 end
 
-task :deleteworld => :env do
-  WorldDb.delete!
+
+
+desc "build world.db from folder '#{WORLD_DIR}'"
+task :build => [:clean,:create,:importworld] do
+  puts 'Done.'
 end
 
-desc "update world.db from folder '#{DATA_DIR}'"
+desc "update world.db from folder '#{WORLD_DIR}'"
 task :update => [:deleteworld, :importworld] do
   puts 'Done.'
 end
@@ -88,4 +93,3 @@ Dir.glob('./tasks/**/*.rake').each do |r|
   import r
   # see blog.smartlogicsolutions.com/2009/05/26/including-external-rake-files-in-your-projects-rakefile-keep-your-rake-tasks-organized/
 end
-

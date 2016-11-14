@@ -1,7 +1,7 @@
 # Todos
 
 
-~~~
+```
   country_title = country_title.gsub('-and-', '-n-')  ???
 
   ### quick hack: patch Asia & Australia to => Asia
@@ -15,5 +15,4 @@
   elsif country.key == 'ch'
     # use confoederatio helvetica NOT switzerland (same as domain country code)
     path = "europe/ch-confoederatio-helvetica" # latin
-~~~
-
+```
